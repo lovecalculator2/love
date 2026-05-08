@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Real Love Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { font-family: 'Poppins', sans-serif; min-height: 100vh; width: 100%; overflow-x: hidden; color: white; background: linear-gradient(-45deg, #ff4e50, #fc913a, #6a11cb, #2575fc, #ff4e50); background-size: 400% 400%; animation: animateBG 8s ease infinite; }
+        @keyframes animateBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .pages-wrapper { position: relative; width: 100%; min-height: 100vh; }
+        .page { position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+        .page.active { display: flex; opacity: 1; position: relative; }
+        .glass-card { background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); width: 100%; max-width: 400px; padding: 35px 28px; text-align: center; }
+        .title { font-size: 2rem; font-weight: 700; margin-bottom: 15px; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
+        .love-emoji { font-size: 5rem; line-height: 1; margin: 5px 0 20px 0; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); animation: heartPulse 2s ease-in-out infinite; display: block; }
+        @keyframes heartPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .form-group { width: 100%; margin-bottom: 16px; text-align: left; }
+        .form-label { font-size: 1rem; font-weight: 500; margin-bottom: 6px; display: block; opacity: 0.95; }
+        .form-input { width: 100%; padding: 14px 18px; border: none; border-radius: 14px; background: rgba(255, 255, 255, 0.9); color: #333; font-size: 1rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.3s ease; }
+        .form-input::placeholder { color: #999; }
+        .form-input:focus { background: rgba(255, 255, 255, 1); box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); }
+        .calculate-btn { display: block; width: 100%; padding: 16px; margin-top: 8px; background: rgba(0, 0, 0, 0.55); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 40px; font-size: 1.1rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease; text-align: center; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); -webkit-appearance: none; appearance: none; -webkit-user-select: none; user-select: none; }
+        .calculate-btn:hover { background: rgba(0, 0, 0, 0.75); transform: scale(1.02); }
+        .calculate-btn:active { transform: scale(0.96); background: rgba(0, 0, 0, 0.85); }
+        .contact-section { margin-top: 22px; padding: 16px; }
+        .contact-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 12px; opacity: 0.9; }
+        .social-links { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        .social-link { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 28px; border-radius: 40px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); width: 100%; max-width: 260px; cursor: pointer; -webkit-appearance: none; appearance: none; }
+        .social-link:hover { transform: scale(1.05); box-shadow: 0 6px 25px rgba(0,0,0,0.4); }
+        .social-link:active { transform: scale(0.97); }
+        .social-link svg { width: 22px; height: 22px; fill: white; flex-shrink: 0; }
+        .instagram-link { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); background-size: 300% 300%; animation: instagramShift 4s ease infinite; }
+        @keyframes instagramShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .tiktok-link { background: linear-gradient(45deg, #25F4EE, #000000, #FE2C55); background-size: 200% 200%; animation: tiktokGradient 3s ease infinite; }
+        @keyframes tiktokGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .footer { margin-top: 12px; padding: 14px 0 5px 0; font-size: 0.85rem; opacity: 0.9; border-top: 1px solid rgba(255,255,255,0.15); }
+        .footer-heart { color: #ff6b9d; animation: heartbeat 1.5s ease-in-out infinite; display: inline-block; }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        .prank-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 15px; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); line-height: 1.4; }
+        .prank-subtitle { font-size: 1rem; font-weight: 400; margin-bottom: 25px; line-height: 1.6; opacity: 0.95; }
+        .baby-emoji { font-size: 6.5rem; line-height: 1; animation: babyBounce 1s ease-in-out infinite; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); cursor: default; user-select: none; margin: 10px 0; }
+        @keyframes babyBounce { 0%, 100% { transform: translateY(0) rotate(-3deg); } 25% { transform: translateY(-15px) rotate(3deg); } 50% { transform: translateY(0) rotate(-3deg); } 75% { transform: translateY(-8px) rotate(3deg); } }
+        .back-btn { display: block; margin: 30px auto 0 auto; padding: 12px 30px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 40px; color: white; font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; -webkit-appearance: none; appearance: none; }
+        .back-btn:hover { background: rgba(255,255,255,0.25); }
+        .back-btn:active { transform: scale(0.96); }
+        .admin-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
+        .admin-subtitle { font-size: 0.85rem; opacity: 0.85; margin-bottom: 20px; }
+        .admin-table-container { width: 100%; border-radius: 16px; overflow: hidden; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); }
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th { background: rgba(0, 0, 0, 0.4); padding: 14px 12px; font-size: 0.9rem; font-weight: 600; text-align: center; }
+        .admin-table td { padding: 12px 12px; text-align: center; font-size: 0.88rem; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
+        .admin-table tr:last-child td { border-bottom: none; }
+        .admin-table tr:hover td { background: rgba(255,255,255,0.1); }
+        .empty-msg { padding: 35px 20px; text-align: center; opacity: 0.7; font-style: italic; }
+        .admin-nav { display: flex; gap: 12px; margin-top: 20px; justify-content: center; }
+        .admin-nav-btn { padding: 10px 22px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); border-radius: 40px; color: white; font-family: 'Poppins', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; -webkit-appearance: none; appearance: none; }
+        .admin-nav-btn:hover { background: rgba(255,255,255,0.25); }
+        .admin-nav-btn:active { transform: scale(0.96); }
+        .count-badge { background: #ff6b9d; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 5px; font-weight: 600; }
+        #loginOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { width: 100%; max-width: 340px; padding: 35px 28px; }
+        .login-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
+        .login-subtitle { font-size: 0.85rem; opacity: 0.85; margin-bottom: 25px; }
+        .login-input { width: 100%; padding: 14px 18px; border: none; border-radius: 14px; background: rgba(255,255,255,0.9); color: #333; font-size: 1rem; font-family: 'Poppins', sans-serif; margin-bottom: 15px; outline: none; }
+        .login-input::placeholder { color: #999; }
+        .login-btn { display: block; width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.6); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 40px; font-size: 1rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease; text-align: center; -webkit-appearance: none; appearance: none; }
+        .login-btn:hover { background: rgba(0, 0, 0, 0.8); }
+        .login-btn:active { transform: scale(0.96); }
+        .login-error { color: #ff9999; font-size: 0.85rem; margin-top: 10px; display: none; }
+        .login-hint { margin-top: 15px; font-size: 0.75rem; opacity: 0.6; }
+        @media (max-width: 480px) { .title { font-size: 1.7rem; } .prank-title { font-size: 1.4rem; } .baby-emoji { font-size: 5.5rem; } .love-emoji { font-size: 4rem; } .glass-card { padding: 28px 20px; } .admin-table th, .admin-table td { padding: 10px 8px; font-size: 0.8rem; } }
+    </style>
+</head>
+<body>
+    <div class="pages-wrapper">
+        <div id="page1" class="page active">
+            <div class="glass-card">
+                <h1 class="title">Real Love Calculator</h1>
+                <span class="love-emoji">❤️</span>
+                <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="userName" placeholder="Enter your name" autocomplete="off"></div>
+                <div class="form-group"><label class="form-label">Your Love/Crush</label><input type="text" class="form-input" id="loveName" placeholder="Enter crush name" autocomplete="off"></div>
+                <button class="calculate-btn" id="calcBtn">❤️ Calculate ❤️</button>
+                <div class="contact-section">
+                    <div class="contact-title">Contact Me</div>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/gadmichael7?igsh=cmd5cms1aWY1a25v&utm_source=qr" target="_blank" rel="noopener noreferrer" class="social-link instagram-link">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            @gadmichael7
+                        </a>
+                        <a href="https://www.tiktok.com/@gadmichael7" target="_blank" rel="noopener noreferrer" class="social-link tiktok-link">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.88-2.89 2.89 2.89 0 012.88-2.89c.2 0 .39.02.57.06V9.66a6.33 6.33 0 00-.57-.03A6.34 6.34 0 003 15.97a6.34 6.34 0 006.33 6.33 6.34 6.34 0 006.33-6.33V8.73a8.16 8.16 0 004.77 1.53V6.82a4.85 4.85 0 01-1-.13z"/></svg>
+                            @gadmichael7
+                        </a>
+                    </div>
+                </div>
+                <div class="footer">Built for lovers @2026 <span class="footer-heart">❤️</span></div>
+            </div>
+        </div>
+        <div id="page2" class="page">
+            <div class="glass-card">
+                <h1 class="prank-title">You have been fooled by Gad</h1>
+                <p class="prank-subtitle">Your name as well as name of your love<br>has been sent to Gad</p>
+                <div class="baby-emoji">👶</div>
+                <button class="back-btn" id="backBtn1">← Go Back</button>
+            </div>
+        </div>
+        <div id="page3" class="page">
+            <div class="glass-card">
+                <div class="admin-header">
+                    <h1 class="admin-title">💘 Secret Crush Dashboard</h1>
+                    <p class="admin-subtitle">Only you can see this, Gad!</p>
+                </div>
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead><tr><th>Friend's Name</th><th>Love <span id="countBadge" class="count-badge">0</span></th></tr></thead>
+                        <tbody id="adminTableBody"><tr><td colspan="2" class="empty-msg">No submissions yet... Go share your link! 😏</td></tr></tbody>
+                    </table>
+                </div>
+                <div class="admin-nav">
+                    <button class="admin-nav-btn" id="backBtn2">← Back to Site</button>
+                    <button class="admin-nav-btn" id="clearBtn">🗑️ Clear All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loginOverlay">
+        <div class="glass-card login-box">
+            <div class="login-title">🔒 Admin Access</div>
+            <div class="login-subtitle">Enter password to view your crush dashboard</div>
+            <input type="password" class="login-input" id="adminPassword" placeholder="Enter password">
+            <button class="login-btn" id="loginBtn">Unlock</button>
+            <div class="login-error" id="loginError">Wrong password! Try again.</div>
+            <div class="login-hint">Hint: Your Instagram username (no @)</div>
+        </div>
+    </div>
+    <script>
+        const STORAGE_KEY = 'gad_love_calculator_data_v3';
+        const ADMIN_PASSWORD = 'gadmichael7';
+        function getSubmissions() { try { const data = localStorage.getItem(STORAGE_KEY); return data ? JSON.parse(data) : []; } catch (e) { return []; } }
+        function saveSubmission(name, love) { const submissions = getSubmissions(); submissions.unshift({ name: name.trim(), love: love.trim(), time: new Date().toLocaleString() }); localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions)); }
+        function clearData() { if (confirm('Are you sure you want to delete all submissions?')) { localStorage.removeItem(STORAGE_KEY); renderAdminTable(); } }
+        function switchPage(pageId) { document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; }); const target = document.getElementById(pageId); if (target) { target.style.display = 'flex'; setTimeout(() => { target.classList.add('active'); }, 10); } window.scrollTo(0, 0); }
+        function goBack() { document.getElementById('userName').value = ''; document.getElementById('loveName').value = ''; switchPage('page1'); }
+        function handleCalculate() { const userName = document.getElementById('userName').value; const loveName = document.getElementById('loveName').value; if (!userName.trim() || !loveName.trim()) { alert('Please enter both names! 💕'); return; } saveSubmission(userName, loveName); switchPage('page2'); }
+        function renderAdminTable() { const tbody = document.getElementById('adminTableBody'); const submissions = getSubmissions(); const badge = document.getElementById('countBadge'); badge.textContent = submissions.length; if (submissions.length === 0) { tbody.innerHTML = '<tr><td colspan="2" class="empty-msg">No submissions yet... Go share your link! 😏</td></tr>'; return; } tbody.innerHTML = submissions.map(sub => `<tr><td>${escapeHtml(sub.name)}</td><td>${escapeHtml(sub.love)}</td></tr>`).join(''); }
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function checkPassword() { const input = document.getElementById('adminPassword').value.trim(); const error = document.getElementById('loginError'); if (input === ADMIN_PASSWORD) { document.getElementById('loginOverlay').style.display = 'none'; document.getElementById('adminPassword').value = ''; renderAdminTable(); } else { error.style.display = 'block'; setTimeout(() => { error.style.display = 'none'; }, 3000); } }
+        function checkUrlHash() { if (window.location.hash === '#admin') { document.getElementById('loginOverlay').style.display = 'flex'; switchPage('page3'); } }
+        document.addEventListener('DOMContentLoaded', function() { document.getElementById('calcBtn').addEventListener('click', handleCalculate); document.getElementById('backBtn1').addEventListener('click', goBack); document.getElementById('backBtn2').addEventListener('click', goBack); document.getElementById('clearBtn').addEventListener('click', clearData); document.getElementById('loginBtn').addEventListener('click', checkPassword); document.getElementById('adminPassword').addEventListener('keypress', function(e) { if (e.key === 'Enter') checkPassword(); }); document.getElementById('loveName').addEventListener('keypress', function(e) { if (e.key === 'Enter') handleCalculate(); }); checkUrlHash(); });
+        window.addEventListener('hashchange', checkUrlHash);
+    </script>
+</body>
+</html>
