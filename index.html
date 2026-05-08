@@ -1,117 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Real Love Calculator</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Real Love Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Poppins',sans-serif;background:linear-gradient(-45deg,#ff4e50,#fc913a,#6a11cb,#2575fc,#ff4e50);background-size:400% 400%;animation:bg 8s ease infinite;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
+@keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.glass-card{background:rgba(255,255,255,.12);backdrop-filter:blur(20px);padding:30px;border-radius:24px;max-width:400px;width:90%;text-align:center}
+.form-input,.calculate-btn,.back-btn,.login-btn,.password-btn,.password-input,.login-input{width:100%;padding:14px;border:none;border-radius:14px;margin:8px 0;font-family:'Poppins',sans-serif}
+.calculate-btn,.back-btn,.login-btn,.password-btn{background:#111;color:#fff;cursor:pointer}
+.page{display:none}.page.active{display:block}
+</style>
 </head>
 <body>
 
-<div class="pages-wrapper">
-    <!-- PAGE 1 -->
-    <div id="page1" class="page active">
-        <div class="glass-card">
-            <h1 class="title">Real Love Calculator</h1>
-            <span class="love-emoji">❤️</span>
-
-            <div class="form-group">
-                <label class="form-label">Name</label>
-                <input type="text" class="form-input" id="userName" placeholder="Enter your name" autocomplete="off">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Your Love/Crush</label>
-                <input type="text" class="form-input" id="loveName" placeholder="Enter crush name" autocomplete="off">
-            </div>
-
-            <button class="calculate-btn" id="calcBtn">❤️ Calculate ❤️</button>
-
-            <div class="contact-section">
-                <div class="contact-title">Contact Me</div>
-
-                <div class="social-links">
-                    <a href="https://www.instagram.com/gadmichael7" target="_blank" class="social-link instagram-link">
-                        Instagram
-                    </a>
-
-                    <a href="https://www.tiktok.com/@gadmichael7" target="_blank" class="social-link tiktok-link">
-                        TikTok
-                    </a>
-                </div>
-            </div>
-
-            <div class="footer">
-                Built for lovers @2026 <span class="footer-heart">❤️</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- PAGE 2 -->
-    <div id="page2" class="page">
-        <div class="glass-card">
-            <h1 class="prank-title">You have been fooled by Gad</h1>
-
-            <p class="prank-subtitle">
-                Your name as well as name of your love has been sent to Gad
-            </p>
-
-            <span class="laugh-emoji">😂</span>
-            <span class="laugh-tears">💦</span>
-
-            <button class="back-btn" id="backBtn1">← Go Back</button>
-        </div>
-    </div>
-
-    <!-- PAGE 3 -->
-    <div id="page3" class="page">
-        <div class="glass-card">
-            <h1 class="admin-title">💘 Secret Crush Dashboard</h1>
-
-            <div class="admin-table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Friend's Name</th>
-                            <th>Love <span id="countBadge" class="count-badge">0</span></th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="adminTableBody">
-                        <tr>
-                            <td colspan="2" class="empty-msg">
-                                No submissions yet...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="admin-nav">
-                <button class="admin-nav-btn" id="backBtn2">← Back</button>
-                <button class="admin-nav-btn" id="clearBtn">🗑️ Clear All</button>
-            </div>
-        </div>
-    </div>
+<div id="page1" class="page active">
+<div class="glass-card">
+<h1>Real Love Calculator ❤️</h1>
+<input type="text" class="form-input" id="userName" placeholder="Enter your name">
+<input type="text" class="form-input" id="loveName" placeholder="Enter crush name">
+<button class="calculate-btn" id="calcBtn">❤️ Calculate ❤️</button>
+<p>Built for lovers @2026 ❤️</p>
+</div>
 </div>
 
-<!-- LOGIN -->
-<div id="loginOverlay">
-    <div class="glass-card login-box">
-        <div class="login-title">🔒 Admin Access</div>
-
-        <input type="password" class="login-input" id="adminPassword" placeholder="Enter password">
-
-        <button class="login-btn" id="loginBtn">Unlock</button>
-
-        <div class="login-error" id="loginError">
-            Wrong password!
-        </div>
-    </div>
+<div id="page2" class="page">
+<div class="glass-card">
+<h1>You have been fooled by Gad 😂</h1>
+<p>Your name as well as name of your love has been sent to Gad</p>
+<a href="https://www.instagram.com/gadmichael7?igsh=cmd5cms1aWY1a25v&utm_source=qr" target="_blank">Instagram</a><br><br>
+<a href="https://www.tiktok.com/@gadmichael7" target="_blank">TikTok</a><br><br>
+<button class="back-btn" id="backBtn1">← Go Back</button>
+</div>
 </div>
 
-<script src="script.js"></script>
+<div id="page3" class="page">
+<div class="glass-card">
+<h1>💘 Secret Crush Dashboard</h1>
+<table border="1" width="100%" style="color:white">
+<thead><tr><th>Friend's Name</th><th>Love</th></tr></thead>
+<tbody id="adminTableBody"></tbody>
+</table>
+
+<input type="password" class="password-input" id="oldPassword" placeholder="Current password">
+<input type="password" class="password-input" id="newPassword" placeholder="New password">
+<button class="password-btn" id="changePassBtn">Update Password</button>
+<button class="back-btn" id="backBtn2">← Back to Site</button>
+</div>
+</div>
+
+<div id="loginOverlay" style="display:none">
+<div class="glass-card">
+<h2>🔒 Admin Access</h2>
+<input type="password" class="login-input" id="adminPassword" placeholder="Enter password">
+<button class="login-btn" id="loginBtn">Unlock</button>
+<p id="loginError" style="display:none;color:red">Wrong password! Try again.</p>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY='gad_love_calculator_data_v4';
+const PASSWORD_KEY='gad_admin_password';
+
+function getAdminPassword(){return localStorage.getItem(PASSWORD_KEY)||'gadmichael7';}
+function getSubmissions(){return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}
+
+function saveSubmission(name,love){
+const submissions=getSubmissions();
+submissions.unshift({name,love,id:Date.now()});
+localStorage.setItem(STORAGE_KEY,JSON.stringify(submissions));
+}
+
+function switchPage(id){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function handleCalculate(){
+const user=document.getElementById('userName').value.trim();
+const love=document.getElementById('loveName').value.trim();
+if(!user||!love){alert('Please enter both names! 💕');return;}
+saveSubmission(user,love);
+switchPage('page2');
+}
+
+function renderAdminTable(){
+const body=document.getElementById('adminTableBody');
+const data=getSubmissions();
+body.innerHTML=data.map(d=>`<tr><td>${d.name}</td><td>${d.love}</td></tr>`).join('');
+}
+
+function checkPassword(){
+const input=document.getElementById('adminPassword').value.trim();
+if(input===getAdminPassword()){
+document.getElementById('loginOverlay').style.display='none';
+renderAdminTable();
+}else{
+document.getElementById('loginError').style.display='block';
+}
+}
+
+function changePassword(){
+const oldPass=document.getElementById('oldPassword').value.trim();
+const newPass=document.getElementById('newPassword').value.trim();
+if(oldPass===getAdminPassword()&&newPass.length>=4){
+localStorage.setItem(PASSWORD_KEY,newPass);
+alert('Password changed successfully!');
+}else{
+alert('Password update failed!');
+}
+}
+
+document.getElementById('calcBtn').onclick=handleCalculate;
+document.getElementById('backBtn1').onclick=()=>switchPage('page1');
+document.getElementById('backBtn2').onclick=()=>switchPage('page1');
+document.getElementById('loginBtn').onclick=checkPassword;
+document.getElementById('changePassBtn').onclick=changePassword;
+
+if(window.location.hash==='#admin'){
+document.getElementById('loginOverlay').style.display='block';
+switchPage('page3');
+}
+</script>
+
 </body>
 </html>
