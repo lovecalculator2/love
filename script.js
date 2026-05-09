@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'gad_love_calculator_data_v3';
-const ADMIN_PASSWORD = 'gadmichael7';
+const ADMIN_PASSWORD = 'mawuedonuse9';
 
 function getSubmissions() {
     try {
