@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>gadadmin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            color: #ffffff;
+            background: #0a0a12;
+            background-image: 
+                radial-gradient(ellipse at 15% 40%, rgba(100, 40, 160, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 15%, rgba(40, 80, 180, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 85%, rgba(160, 60, 100, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(60, 120, 200, 0.05) 0%, transparent 50%);
+        }
+
+        .glass-card {
+            background: rgba(30, 30, 45, 0.4);
+            backdrop-filter: blur(80px) saturate(200%);
+            -webkit-backdrop-filter: blur(80px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 16px 48px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 50%, transparent 100%);
+            border-radius: 28px 28px 0 0;
+            pointer-events: none;
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.03) 0%, transparent 60%);
+            pointer-events: none;
+            animation: cardLight 10s ease-in-out infinite;
+        }
+
+        @keyframes cardLight {
+            0%, 100% { transform: translate(0, 0); opacity: 1; }
+            50% { transform: translate(5%, 3%); opacity: 0.7; }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 28px 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding: 0 4px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255, 200, 80, 0.2), rgba(255, 150, 60, 0.15));
+            border: 1px solid rgba(255, 200, 80, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 16px rgba(255, 200, 80, 0.1);
+        }
+
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: -0.3px;
+        }
+
+        .header-subtitle {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.45);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            background: rgba(255, 80, 80, 0.12);
+            border: 1px solid rgba(255, 100, 100, 0.25);
+            border-radius: 16px;
+            color: #ff7b7b;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 16px rgba(255, 80, 80, 0.08);
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 80, 80, 0.25);
+            transform: scale(1.05) translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 80, 80, 0.15);
+        }
+
+        .logout-btn:active {
+            transform: scale(0.97);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            padding: 24px 20px;
+            text-align: left;
+        }
+
+        .stat-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            background: rgba(255, 200, 80, 0.12);
+            border: 1px solid rgba(255, 200, 80, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 16px rgba(255, 200, 80, 0.08);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffd93d;
+            text-shadow: 0 2px 12px rgba(255, 217, 61, 0.25);
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.45);
+            margin-top: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .table-section {
+            padding: 28px 24px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-count {
+            background: rgba(255, 200, 80, 0.12);
+            border: 1px solid rgba(255, 200, 80, 0.2);
+            color: #ffd93d;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 20px;
+            background: rgba(20, 20, 35, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            position: relative;
+            z-index: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        thead th {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 16px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.55);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        tbody td {
+            padding: 16px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.85);
+            font-weight: 400;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover td {
+            background: rgba(255,255,255,0.04);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: rgba(255,255,255,0.35);
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .delete-btn {
+            background: rgba(255, 60, 60, 0.1);
+            border: 1px solid rgba(255, 80, 80, 0.2);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: #ff7b7b;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 60, 60, 0.25);
+            transform: scale(1.05) translateY(-1px);
+            box-shadow: 0 4px 16px rgba(255, 80, 80, 0.15);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.97);
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 18, 0.92);
+            backdrop-filter: blur(60px) saturate(150%);
+            -webkit-backdrop-filter: blur(60px) saturate(150%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 340px;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .login-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+            animation: lockFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes lockFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .login-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-subtitle {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .login-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 200, 80, 0.4);
+            box-shadow: 0 0 0 4px rgba(255, 200, 80, 0.08), 0 4px 20px rgba(0,0,0,0.2);
+            transform: translateY(-1px);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ffd93d, #ff9f43);
+            border: none;
+            border-radius: 16px;
+            color: #1a1a2e;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 6px 24px rgba(255, 200, 80, 0.3),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 
+                0 10px 32px rgba(255, 200, 80, 0.4),
+                0 0 0 1px rgba(255,255,255,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.35);
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .login-error {
+            color: #ff7b7b;
+            font-size: 0.88rem;
+            margin-top: 14px;
+            display: none;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-error.show {
+            display: block;
+            animation: errorShake 0.4s ease-in-out;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 18, 0.8);
+            backdrop-filter: blur(30px) saturate(150%);
+            -webkit-backdrop-filter: blur(30px) saturate(150%);
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #ffd93d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 20px rgba(255, 200, 80, 0.2);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .header-title { font-size: 1.3rem; }
+            .stat-value { font-size: 1.8rem; }
+            .container { padding: 20px 16px; }
+            .table-section { padding: 20px 16px; }
+            table { font-size: 0.85rem; }
+            thead th, tbody td { padding: 12px 10px; }
+            .login-card { padding: 36px 24px; }
+        }
+
+        @media (max-width: 380px) {
+            .header-title { font-size: 1.15rem; }
+            .stat-value { font-size: 1.5rem; }
+            .login-title { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginOverlay" class="login-overlay">
+        <div class="glass-card login-card">
+            <span class="login-icon">🔒</span>
+            <div class="login-title">Admin Access</div>
+            <div class="login-subtitle">Enter password to view your crush dashboard</div>
+            <input type="password" class="login-input" id="adminPassword" placeholder="Enter password">
+            <button class="login-btn" id="loginBtn">Unlock Dashboard</button>
+            <div class="login-error" id="loginError">Wrong password! Try again.</div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="container" style="display: none;">
+        <div class="header">
+            <div class="header-brand">
+                <div class="header-icon">💘</div>
+                <div>
+                    <div class="header-title">Secret Crush Dashboard</div>
+                    <div class="header-subtitle">Only you can see this, Gad!</div>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="glass-card stat-card">
+                <div class="stat-icon-wrap">👥</div>
+                <div class="stat-value" id="totalSubmissions">0</div>
+                <div class="stat-label">Total Submissions</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-icon-wrap">💕</div>
+                <div class="stat-value" id="todaySubmissions">0</div>
+                <div class="stat-label">Today</div>
+            </div>
+        </div>
+
+        <div class="glass-card table-section">
+            <div class="section-header">
+                <div class="section-title">📋 All Submissions</div>
+                <div class="section-count" id="submissionCount">0 entries</div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Friend's Name</th>
+                            <th>Love/Crush</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissionsTableBody">
+                        <tr><td colspan="4" class="empty-state">No submissions yet... Go share your link! 😏</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://love-calculator-1of4.onrender.com/api';
+
+        let adminPassword = localStorage.getItem('gad_admin_password');
+        let submissions = [];
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function login(password) {
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await response.json();
+                return response.ok && data.success;
+            } catch (e) {
+                console.error('Login error:', e);
+                return false;
+            }
+        }
+
+        async function fetchSubmissions() {
+            try {
+                const response = await fetch(`${API_BASE}/submissions`, {
+                    headers: { 'x-admin-password': adminPassword }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    submissions = data.submissions || [];
+                    renderSubmissions();
+                    updateStats();
+                } else {
+                    console.error('Failed to fetch:', data.error);
+                    if (response.status === 401) {
+                        handleLogout();
+                    }
+                }
+            } catch (e) {
+                console.error('Fetch error:', e);
+            }
+        }
+
+        async function deleteSubmission(id) {
+            if (!confirm('Delete this submission?')) return;
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE}/submissions/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'x-admin-password': adminPassword }
+                });
+                if (response.ok) {
+                    await fetchSubmissions();
+                } else {
+                    alert('Failed to delete');
+                    if (response.status === 401) handleLogout();
+                }
+            } catch (e) {
+                console.error('Delete error:', e);
+                alert('Failed to delete');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderSubmissions() {
+            const tbody = document.getElementById('submissionsTableBody');
+            const countEl = document.getElementById('submissionCount');
+
+            countEl.textContent = `${submissions.length} entries`;
+
+            if (submissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No submissions yet... Go share your link! 😏</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = submissions.map(sub => `
+                <tr>
+                    <td>${escapeHtml(sub.name || '-')}</td>
+                    <td>${escapeHtml(sub.love || '-')}</td>
+                    <td>${escapeHtml(sub.time || '-')}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteSubmission('${sub.id}')">🗑️ Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalSubmissions').textContent = submissions.length;
+
+            const today = new Date().toDateString();
+            const todayCount = submissions.filter(s => {
+                const subDate = new Date(s.timestamp).toDateString();
+                return subDate === today;
+            }).length;
+            document.getElementById('todaySubmissions').textContent = todayCount;
+        }
+
+        async function handleLogin() {
+            const password = document.getElementById('adminPassword').value.trim();
+            const errorEl = document.getElementById('loginError');
+
+            if (!password) {
+                errorEl.textContent = 'Please enter a password';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            showLoading();
+            const valid = await login(password);
+            hideLoading();
+
+            if (valid) {
+                adminPassword = password;
+                localStorage.setItem('gad_admin_password', password);
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('dashboard').style.display = 'block';
+                await fetchSubmissions();
+            } else {
+                errorEl.textContent = 'Wrong password! Try again.';
+                errorEl.classList.add('show');
+                setTimeout(() => errorEl.classList.remove('show'), 3000);
+            }
+        }
+
+        function handleLogout() {
+            adminPassword = null;
+            localStorage.removeItem('gad_admin_password');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').classList.remove('show');
+        }
+
+        async function init() {
+            if (adminPassword) {
+                showLoading();
+                const valid = await login(adminPassword);
+                hideLoading();
+
+                if (valid) {
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    document.getElementById('dashboard').style.display = 'block';
+                    await fetchSubmissions();
+                } else {
+                    adminPassword = null;
+                    localStorage.removeItem('gad_admin_password');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
+            document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleLogin();
+            });
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+            init();
+        });
+    </script>
+</body>
+</html>
