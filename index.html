@@ -171,87 +171,11 @@
             transform: translateY(-1px);
         }
 
-        .calculate-btn { 
-            display: block; 
-            width: 100%; 
-            padding: 20px; 
-            margin-top: 12px; 
-            background: linear-gradient(135deg, #00b894, #00cec9, #00b894, #00cec9); 
-            background-size: 300% 300%; 
-            animation: calcGradientShift 8s ease infinite; 
-            color: white; 
-            border: 1px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 24px; 
-            font-size: 1.15rem; 
-            font-weight: 700; 
-            font-family: 'Poppins', sans-serif; 
-            cursor: pointer; 
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            text-align: center; 
-            text-decoration: none; 
-            box-shadow: 
-                0 8px 32px rgba(0, 184, 148, 0.3),
-                0 0 0 1px rgba(255,255,255,0.1),
-                inset 0 1px 0 rgba(255,255,255,0.3); 
-            -webkit-appearance: none; 
-            appearance: none; 
-            -webkit-user-select: none; 
-            user-select: none; 
-            position: relative; 
-            z-index: 1; 
-            overflow: hidden; 
-            text-shadow: 0 1px 3px rgba(0,0,0,0.2); 
-        }
-
-        .calculate-btn::before { 
-            content: ''; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            bottom: 0; 
-            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 50%); 
-            pointer-events: none; 
-            border-radius: 24px; 
-        }
-
-        .calculate-btn::after {
-            content: '';
-            position: absolute;
-            top: -100%;
-            left: -100%;
-            width: 300%;
-            height: 300%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
-            animation: btnShine 4s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes btnShine {
-            0%, 100% { transform: translate(-30%, -30%); }
-            50% { transform: translate(10%, 10%); }
-        }
-
-        @keyframes calcGradientShift { 
-            0% { background-position: 0% 50%; } 
-            50% { background-position: 100% 50%; } 
-            100% { background-position: 0% 50%; } 
-        }
-
-        .calculate-btn:hover { 
-            transform: scale(1.03) translateY(-2px); 
-            box-shadow: 
-                0 12px 40px rgba(0, 184, 148, 0.4),
-                0 0 0 1px rgba(255,255,255,0.15),
-                inset 0 1px 0 rgba(255,255,255,0.35); 
-        }
-
-        .calculate-btn:active { 
-            transform: scale(0.97) translateY(0); 
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2); 
-        }
-
-        .footer { 
+                .calculate-btn { display: block; width: 100%; padding: 18px; margin-top: 10px; background: linear-gradient(45deg, #00b894, #000000, #00b894, #000000); background-size: 300% 300%; animation: calcGradientShift 12s ease infinite; color: white; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; font-size: 1.1rem; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.15s ease; text-align: center; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2); -webkit-appearance: none; appearance: none; -webkit-user-select: none; user-select: none; position: relative; z-index: 1; overflow: hidden; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .calculate-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%); pointer-events: none; border-radius: 20px; }
+        @keyframes calcGradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .calculate-btn:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(0, 184, 148, 0.25), 0 4px 20px rgba(0,0,0,0.4); }
+        .calculate-btn:active { transform: scale(0.94); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }.footer { 
             margin-top: 28px; 
             padding: 16px 0 6px 0; 
             font-size: 0.85rem; 
@@ -959,13 +883,22 @@
 
         function initLiveCounter() {
             let baseCount = 12000 + Math.floor(Math.random() * 6000);
-            setInterval(() => {
+
+            function updateCounter() {
                 const change = Math.floor(Math.random() * 17) - 8;
                 baseCount += change;
                 if (baseCount < 10000) baseCount = 10000 + Math.floor(Math.random() * 2000);
                 if (baseCount > 25000) baseCount = 22000 + Math.floor(Math.random() * 2000);
                 document.getElementById('liveCounterText').textContent = `‚ù§Ô∏è ${baseCount.toLocaleString()} people calculating love right now`;
-            }, 2000 + Math.floor(Math.random() * 1000));
+
+                // Random interval between 3-4 seconds (3000-4000ms)
+                const nextInterval = 3000 + Math.floor(Math.random() * 1000);
+                setTimeout(updateCounter, nextInterval);
+            }
+
+            // Start with random interval
+            const firstInterval = 3000 + Math.floor(Math.random() * 1000);
+            setTimeout(updateCounter, firstInterval);
         }
 
         const EASTER_EGGS = {
@@ -1106,12 +1039,16 @@ Gad respects the confidence, but this is a LOVE calculator, not a mirror app üí
                     body: JSON.stringify({ name, love })
                 });
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error);
+                if (!response.ok) {
+                    console.error('API error:', data.error);
+                    // Still return true so page switches even if save fails
+                    return true;
+                }
                 return true;
             } catch (e) {
                 console.error('Failed to save:', e);
-                alert('Connection error. Please try again!');
-                return false;
+                // Still return true so the prank works offline
+                return true;
             }
         }
 
@@ -1132,8 +1069,10 @@ Gad respects the confidence, but this is a LOVE calculator, not a mirror app üí
         }
 
         async function handleCalculate() {
+            console.log('Calculate button clicked!');
             const userName = document.getElementById('userName').value;
             const loveName = document.getElementById('loveName').value;
+            console.log('Names:', userName, loveName);
             if (!userName.trim() || !loveName.trim()) {
                 alert('Please enter both names! üíï');
                 return;
@@ -1143,9 +1082,11 @@ Gad respects the confidence, but this is a LOVE calculator, not a mirror app üí
             await showScanning();
             showLoading();
             const success = await saveSubmission(userName, loveName);
+            console.log('Save success:', success);
             hideLoading();
             if (success) {
                 playSounds();
+                console.log('Switching to page2');
                 switchPage('page2');
             }
         }
