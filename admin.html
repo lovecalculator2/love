@@ -112,6 +112,31 @@
             box-shadow: 0 4px 16px rgba(255, 200, 80, 0.1);
         }
 
+        .profile-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 200, 80, 0.3);
+            background: linear-gradient(135deg, rgba(255, 200, 80, 0.2), rgba(255, 150, 60, 0.15));
+            box-shadow: 0 4px 16px rgba(255, 200, 80, 0.15);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-fallback {
+            font-size: 1.5rem;
+        }
+
         .header-title {
             font-size: 1.6rem;
             font-weight: 700;
@@ -241,7 +266,6 @@
         }
 
         .table-container {
-            overflow-x: auto;
             border-radius: 20px;
             background: rgba(20, 20, 35, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -249,6 +273,7 @@
             -webkit-backdrop-filter: blur(40px);
             position: relative;
             z-index: 1;
+            width: 100%;
         }
 
         table {
@@ -259,22 +284,35 @@
 
         thead th {
             background: rgba(0, 0, 0, 0.25);
-            padding: 16px 14px;
+            padding: 16px 12px;
             text-align: left;
             font-weight: 600;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: rgba(255,255,255,0.55);
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
+            white-space: nowrap;
         }
 
+        thead th:nth-child(1) { width: 30%; }
+        thead th:nth-child(2) { width: 30%; }
+        thead th:nth-child(3) { width: 25%; }
+        thead th:nth-child(4) { width: 15%; text-align: center; }
+
         tbody td {
-            padding: 16px 14px;
+            padding: 14px 12px;
             border-bottom: 1px solid rgba(255,255,255,0.04);
             color: rgba(255,255,255,0.85);
             font-weight: 400;
             transition: background 0.2s ease;
+            word-break: break-word;
+            max-width: 0;
+        }
+
+        tbody td:nth-child(4) {
+            text-align: center;
+            white-space: nowrap;
         }
 
         tbody tr:hover td {
@@ -536,7 +574,10 @@
     <div id="dashboard" class="container" style="display: none;">
         <div class="header">
             <div class="header-brand">
-                <div class="header-icon">💘</div>
+                <div class="profile-pic">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Gad" alt="Profile" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="profile-fallback" style="display:none;">💘</div>
+                </div>
                 <div>
                     <div class="header-title">Secret Crush Dashboard</div>
                     <div class="header-subtitle">Only you can see this, Gad!</div>
@@ -735,20 +776,13 @@
         }
 
         async function init() {
-            if (adminPassword) {
-                showLoading();
-                const valid = await login(adminPassword);
-                hideLoading();
-
-                if (valid) {
-                    document.getElementById('loginOverlay').classList.add('hidden');
-                    document.getElementById('dashboard').style.display = 'block';
-                    await fetchSubmissions();
-                } else {
-                    adminPassword = null;
-                    localStorage.removeItem('gad_admin_password');
-                }
-            }
+            // Always show login on refresh - no auto-login
+            adminPassword = null;
+            localStorage.removeItem('gad_admin_password');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').classList.remove('show');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
