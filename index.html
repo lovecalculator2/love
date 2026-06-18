@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Love Calc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body { 
+            font-family: 'Poppins', sans-serif; 
+            min-height: 100vh; 
+            width: 100%; 
+            overflow-x: hidden; 
+            color: white; 
+            background: linear-gradient(-45deg, #ff4e50, #fc913a, #6a11cb, #2575fc, #ff4e50); 
+            background-size: 400% 400%; 
+            animation: animateBG 35s ease infinite; 
+        }
+
+        @keyframes animateBG { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.06); 
+            backdrop-filter: blur(60px) saturate(200%); 
+            -webkit-backdrop-filter: blur(60px) saturate(200%); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            border-radius: 32px; 
+            box-shadow: 
+                0 12px 48px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1); 
+            width: 100%; 
+            max-width: 420px; 
+            padding: 40px 32px; 
+            text-align: center; 
+            position: relative; 
+            overflow: hidden; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 16px 56px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            height: 45%; 
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 50%, transparent 100%); 
+            border-radius: 32px 32px 0 0; 
+            pointer-events: none; 
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.08) 0%, transparent 60%);
+            pointer-events: none;
+            animation: lightShift 8s ease-in-out infinite;
+        }
+
+        @keyframes lightShift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(5%, 5%); }
+        }
+
+        .pages-wrapper { position: relative; width: 100%; min-height: 100vh; }
+
+        .page { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            min-height: 100vh; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            opacity: 0; 
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        .page.active { display: flex; opacity: 1; position: relative; }
+
+        .title { 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            margin-bottom: 16px; 
+            color: #ffffff; 
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4), 0 0 40px rgba(255,255,255,0.1); 
+            letter-spacing: -0.5px; 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        .love-emoji { 
+            font-size: 5.5rem; 
+            line-height: 1; 
+            margin: 8px 0 28px 0; 
+            filter: drop-shadow(0 10px 24px rgba(255, 50, 50, 0.5)); 
+            animation: heartPulse 2.5s ease-in-out infinite; 
+            display: block; 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        @keyframes heartPulse { 
+            0%, 100% { transform: scale(1) translateY(0); } 
+            50% { transform: scale(1.15) translateY(-6px); } 
+        }
+
+        .form-group { 
+            width: 100%; 
+            margin-bottom: 20px; 
+            text-align: left; 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        .form-label { 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            margin-bottom: 10px; 
+            display: block; 
+            color: rgba(255,255,255,0.9); 
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3); 
+            letter-spacing: 0.5px; 
+        }
+
+        .form-input { 
+            width: 100%; 
+            padding: 18px 20px; 
+            border: none; 
+            border-radius: 20px; 
+            background: rgba(255, 255, 255, 0.92); 
+            color: #1a1a2e; 
+            font-size: 1.05rem; 
+            font-family: 'Poppins', sans-serif; 
+            outline: none; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3); 
+        }
+
+        .form-input::placeholder { color: rgba(26, 26, 46, 0.5); }
+
+        .form-input:focus { 
+            background: #ffffff; 
+            border-color: rgba(255, 100, 100, 0.6); 
+            box-shadow: 0 0 0 4px rgba(255, 100, 100, 0.12), 0 6px 24px rgba(0,0,0,0.15); 
+            transform: translateY(-1px);
+        }
+
+                .calculate-btn { display: block; width: 100%; padding: 18px; margin-top: 10px; background: linear-gradient(45deg, #00b894, #000000, #00b894, #000000); background-size: 300% 300%; animation: calcGradientShift 12s ease infinite; color: white; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; font-size: 1.1rem; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.15s ease; text-align: center; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2); -webkit-appearance: none; appearance: none; -webkit-user-select: none; user-select: none; position: relative; z-index: 1; overflow: hidden; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .calculate-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%); pointer-events: none; border-radius: 20px; }
+        @keyframes calcGradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .calculate-btn:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(0, 184, 148, 0.25), 0 4px 20px rgba(0,0,0,0.4); }
+        .calculate-btn:active { transform: scale(0.94); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }.footer { 
+            margin-top: 28px; 
+            padding: 16px 0 6px 0; 
+            font-size: 0.85rem; 
+            color: rgba(255, 255, 255, 0.85); 
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4); 
+            border-top: 1px solid rgba(255,255,255,0.12); 
+            position: relative; 
+            z-index: 1; 
+            font-weight: 500; 
+        }
+
+        .footer-heart { 
+            color: #ff6b9d; 
+            animation: heartbeat 1.2s ease-in-out infinite; 
+            display: inline-block; 
+            filter: drop-shadow(0 0 6px rgba(255, 107, 157, 0.6)); 
+        }
+
+        @keyframes heartbeat { 
+            0%, 100% { transform: scale(1); } 
+            50% { transform: scale(1.3); } 
+        }
+
+        .laugh-emoji { 
+            font-size: 6.5rem; 
+            line-height: 1; 
+            animation: realLaugh 1.4s ease-in-out infinite; 
+            filter: drop-shadow(0 6px 20px rgba(0,0,0,0.4)); 
+            cursor: default; 
+            user-select: none; 
+            margin: 8px 0; 
+            display: block; 
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes realLaugh { 
+            0%, 100% { transform: translateY(0) rotate(-5deg) scale(1); } 
+            25% { transform: translateY(-22px) rotate(5deg) scale(1.15); } 
+            50% { transform: translateY(0) rotate(-5deg) scale(1); } 
+            75% { transform: translateY(-14px) rotate(5deg) scale(1.1); } 
+        }
+
+        .prank-title { 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            margin-bottom: 14px; 
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4); 
+            line-height: 1.4; 
+            position: relative;
+            z-index: 1;
+        }
+
+        .prank-subtitle { 
+            font-size: 1rem; 
+            font-weight: 400; 
+            margin-bottom: 18px; 
+            line-height: 1.6; 
+            opacity: 0.95; 
+            position: relative;
+            z-index: 1;
+        }
+
+        .prank-social-section { 
+            margin-top: 18px; 
+            padding: 14px; 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        .prank-social-title { 
+            font-size: 0.95rem; 
+            font-weight: 500; 
+            margin-bottom: 14px; 
+            opacity: 0.9; 
+        }
+
+        .social-links { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            align-items: center; 
+        }
+
+        .social-link { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            padding: 16px 28px; 
+            border-radius: 24px; 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 1rem; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 
+                0 6px 24px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(255,255,255,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.2); 
+            width: 100%; 
+            max-width: 280px; 
+            cursor: pointer; 
+            -webkit-appearance: none; 
+            appearance: none; 
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        .social-link::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%); 
+            pointer-events: none; 
+            border-radius: 24px; 
+        }
+
+        .social-link::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: socialShine 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes socialShine {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10%, 10%); }
+        }
+
+        .social-link:hover { 
+            transform: scale(1.05) translateY(-2px); 
+            box-shadow: 
+                0 10px 32px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.12),
+                inset 0 1px 0 rgba(255,255,255,0.25); 
+        }
+
+        .social-link:active { 
+            transform: scale(0.97); 
+        }
+
+        .social-link svg { 
+            width: 24px; 
+            height: 24px; 
+            fill: white; 
+            flex-shrink: 0; 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        .instagram-link { 
+            background: linear-gradient(90deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888, #f09433); 
+            background-size: 400% 100%; 
+            animation: instagramShift 8s linear infinite; 
+        }
+
+        @keyframes instagramShift { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+
+        .tiktok-link { 
+            background: linear-gradient(45deg, #25F4EE, #000000, #FE2C55, #25F4EE); 
+            background-size: 300% 300%; 
+            animation: tiktokGradient 8s ease infinite; 
+        }
+
+        @keyframes tiktokGradient { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+
+        .back-btn { 
+            display: block; 
+            margin: 24px auto 0 auto; 
+            padding: 16px 36px; 
+            background: rgba(255,255,255,0.08); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 24px; 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            -webkit-appearance: none; 
+            appearance: none; 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            position: relative; 
+            z-index: 1; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .back-btn:hover { 
+            background: rgba(255,255,255,0.15); 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+        }
+
+        .back-btn:active { 
+            transform: scale(0.96); 
+        }
+
+        .loading-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(20px) saturate(150%); 
+            -webkit-backdrop-filter: blur(20px) saturate(150%); 
+            z-index: 2000; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+
+        .loading-overlay.active { display: flex; }
+
+        .spinner { 
+            width: 56px; 
+            height: 56px; 
+            border: 4px solid rgba(255,255,255,0.15); 
+            border-top-color: #ff6b9d; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { 
+            margin-top: 18px; 
+            font-size: 0.95rem; 
+            color: rgba(255,255,255,0.85); 
+            font-weight: 500;
+        }
+
+        .ai-detector-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px; 
+            background: rgba(20, 5, 50, 0.5); 
+            backdrop-filter: blur(30px) saturate(180%); 
+            -webkit-backdrop-filter: blur(30px) saturate(180%); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 50px; 
+            padding: 14px 24px; 
+            margin-bottom: 24px; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            color: #ffffff; 
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5); 
+            position: relative; 
+            z-index: 1; 
+            animation: badgePulse 3s ease-in-out infinite; 
+            box-shadow: 
+                0 6px 24px rgba(0,0,0,0.2), 
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                0 0 0 1px rgba(255,255,255,0.05); 
+        }
+
+        .ai-detector-badge .ai-icon { font-size: 1.2rem; }
+
+        .ai-detector-badge .ai-dot { 
+            width: 10px; 
+            height: 10px; 
+            background: #00ff88; 
+            border-radius: 50%; 
+            box-shadow: 0 0 12px #00ff88, 0 0 24px #00ff88; 
+            animation: dotBlink 1.5s ease-in-out infinite; 
+        }
+
+        @keyframes badgePulse { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.3), 0 6px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15); } 
+            50% { box-shadow: 0 0 24px 6px rgba(106, 17, 203, 0.15), 0 6px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15); } 
+        }
+
+        @keyframes dotBlink { 
+            0%, 100% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.4; transform: scale(0.7); } 
+        }
+
+        .live-counter { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px; 
+            background: rgba(60, 10, 10, 0.45); 
+            backdrop-filter: blur(20px) saturate(150%); 
+            -webkit-backdrop-filter: blur(20px) saturate(150%); 
+            border: 1px solid rgba(255, 120, 120, 0.3); 
+            border-radius: 50px; 
+            padding: 12px 24px; 
+            margin-bottom: 22px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            color: #ffffff; 
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5); 
+            position: relative; 
+            z-index: 1; 
+            box-shadow: 
+                0 4px 20px rgba(0,0,0,0.2), 
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 0 0 1px rgba(255,255,255,0.04); 
+        }
+
+        .live-counter .live-dot { 
+            width: 12px; 
+            height: 12px; 
+            background: #ff3333; 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px #ff3333, 0 0 20px rgba(255, 51, 51, 0.5); 
+            animation: livePulse 1.2s ease-in-out infinite; 
+        }
+
+        @keyframes livePulse { 
+            0%, 100% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.5; transform: scale(1.4); } 
+        }
+
+        .scanning-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.88); 
+            backdrop-filter: blur(40px) saturate(180%); 
+            -webkit-backdrop-filter: blur(40px) saturate(180%); 
+            z-index: 3000; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 30px; 
+        }
+
+        .scanning-overlay.active { display: flex; }
+
+        .scanning-card { 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 32px;
+            padding: 40px 32px;
+            box-shadow: 
+                0 12px 48px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .scanning-emoji { 
+            font-size: 4.5rem; 
+            margin-bottom: 24px; 
+            display: block; 
+            animation: scanEmojiPulse 1.5s ease-in-out infinite; 
+        }
+
+        @keyframes scanEmojiPulse { 
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(255,100,100,0.5)); } 
+            50% { transform: scale(1.2); filter: drop-shadow(0 0 36px rgba(255,100,100,0.8)); } 
+        }
+
+        .scanning-text { 
+            font-size: 1.15rem; 
+            font-weight: 600; 
+            margin-bottom: 28px; 
+            color: #ffffff; 
+            text-shadow: 0 2px 12px rgba(0,0,0,0.5); 
+            min-height: 30px; 
+        }
+
+        .scanning-progress-container { 
+            width: 100%; 
+            height: 12px; 
+            background: rgba(255,255,255,0.08); 
+            border-radius: 50px; 
+            overflow: hidden; 
+            margin-bottom: 18px; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        .scanning-progress-bar { 
+            height: 100%; 
+            width: 0%; 
+            background: linear-gradient(90deg, #ff6b9d, #ff4757, #ff6b9d); 
+            background-size: 200% 100%; 
+            animation: progressShine 1s linear infinite; 
+            border-radius: 50px; 
+            transition: width 0.3s ease; 
+            box-shadow: 0 0 20px rgba(255, 100, 100, 0.6); 
+        }
+
+        @keyframes progressShine { 
+            0% { background-position: 0% 50%; } 
+            100% { background-position: 200% 50%; } 
+        }
+
+        .scanning-percentage { 
+            font-size: 3rem; 
+            font-weight: 700; 
+            color: #ffffff; 
+            text-shadow: 0 0 40px rgba(255,100,100,0.6), 0 2px 12px rgba(0,0,0,0.5); 
+            margin-bottom: 12px; 
+            font-family: 'Poppins', sans-serif; 
+        }
+
+        .scanning-details { 
+            font-size: 0.85rem; 
+            color: rgba(255,255,255,0.5); 
+            margin-top: 18px; 
+            font-weight: 500;
+        }
+
+        .scanning-hearts { 
+            font-size: 1.8rem; 
+            margin-top: 18px; 
+            letter-spacing: 6px; 
+        }
+
+        .easter-egg-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(30px) saturate(150%); 
+            -webkit-backdrop-filter: blur(30px) saturate(150%); 
+            z-index: 3500; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 30px; 
+        }
+
+        .easter-egg-overlay.active { display: flex; }
+
+        .easter-egg-card { 
+            width: 100%; 
+            max-width: 380px; 
+            background: rgba(255,255,255,0.05); 
+            backdrop-filter: blur(60px) saturate(180%); 
+            -webkit-backdrop-filter: blur(60px) saturate(180%); 
+            border: 1px solid rgba(255,255,255,0.15); 
+            border-radius: 32px; 
+            padding: 40px 32px; 
+            text-align: center; 
+            box-shadow: 
+                0 12px 48px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.15); 
+            animation: easterEggPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
+        }
+
+        @keyframes easterEggPop { 
+            0% { transform: scale(0.5) translateY(50px); opacity: 0; } 
+            100% { transform: scale(1) translateY(0); opacity: 1; } 
+        }
+
+        .easter-egg-emoji { 
+            font-size: 5rem; 
+            margin-bottom: 18px; 
+            display: block; 
+            animation: easterShake 0.5s ease-in-out infinite; 
+        }
+
+        @keyframes easterShake { 
+            0%, 100% { transform: rotate(-3deg); } 
+            50% { transform: rotate(3deg); } 
+        }
+
+        .easter-egg-title { 
+            font-size: 1.4rem; 
+            font-weight: 700; 
+            margin-bottom: 12px; 
+            color: #ffffff; 
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4); 
+        }
+
+        .easter-egg-text { 
+            font-size: 1rem; 
+            color: rgba(255,255,255,0.85); 
+            line-height: 1.6; 
+            margin-bottom: 24px; 
+        }
+
+        .easter-egg-btn { 
+            padding: 16px 36px; 
+            background: linear-gradient(135deg, #ff6b9d, #ff4757); 
+            border: none; 
+            border-radius: 24px; 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            font-size: 1rem; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 
+                0 6px 24px rgba(255, 100, 100, 0.3),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.2); 
+        }
+
+        .easter-egg-btn:hover { 
+            transform: scale(1.05) translateY(-2px); 
+            box-shadow: 
+                0 10px 32px rgba(255, 100, 100, 0.4),
+                0 0 0 1px rgba(255,255,255,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.25); 
+        }
+
+        .easter-egg-btn:active { 
+            transform: scale(0.96); 
+        }
+
+        .prank-pre-message { 
+            background: rgba(80, 10, 10, 0.5); 
+            backdrop-filter: blur(30px) saturate(150%); 
+            -webkit-backdrop-filter: blur(30px) saturate(150%); 
+            border: 1px solid rgba(255, 100, 100, 0.35); 
+            border-radius: 24px; 
+            padding: 24px 22px; 
+            margin-bottom: 24px; 
+            text-align: center; 
+            position: relative; 
+            z-index: 1; 
+            animation: preMessageSlide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            box-shadow: 
+                0 6px 24px rgba(0,0,0,0.25), 
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 0 0 1px rgba(255,255,255,0.04); 
+        }
+
+        @keyframes preMessageSlide { 
+            0% { transform: translateY(-30px); opacity: 0; } 
+            100% { transform: translateY(0); opacity: 1; } 
+        }
+
+        .prank-pre-message .pre-title { 
+            font-size: 1.15rem; 
+            font-weight: 700; 
+            color: #ffffff; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.6); 
+            margin-bottom: 10px; 
+            line-height: 1.4; 
+        }
+
+        .prank-pre-message .pre-subtitle { 
+            font-size: 0.95rem; 
+            color: rgba(255,255,255,0.92); 
+            line-height: 1.5; 
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4); 
+        }
+
+        .prank-pre-message .pre-skull { 
+            font-size: 2.2rem; 
+            display: block; 
+            margin-bottom: 12px; 
+            animation: skullBounce 1s ease-in-out infinite; 
+        }
+
+        @keyframes skullBounce { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-10px); } 
+        }
+
+        @media (max-width: 480px) { 
+            .title { font-size: 1.8rem; } 
+            .prank-title { font-size: 1.4rem; } 
+            .laugh-emoji { font-size: 5.5rem; } 
+            .love-emoji { font-size: 4.5rem; } 
+            .glass-card { padding: 32px 24px; border-radius: 28px; } 
+            .form-input { padding: 16px 18px; } 
+            .calculate-btn { padding: 18px; font-size: 1.05rem; } 
+            .scanning-percentage { font-size: 2.5rem; } 
+            .scanning-text { font-size: 1.05rem; } 
+            .easter-egg-card { padding: 32px 24px; } 
+            .easter-egg-emoji { font-size: 4rem; } 
+        }
+
+        @media (max-width: 360px) { 
+            .glass-card { padding: 28px 20px; } 
+            .ai-detector-badge { font-size: 0.78rem; padding: 10px 18px; } 
+            .live-counter { font-size: 0.8rem; padding: 8px 16px; } 
+        }
+
+        html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+        button, .social-link { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    </style>
+</head>
+<body>
+    <div class="pages-wrapper">
+        <div id="page1" class="page active">
+            <div class="glass-card">
+                <div class="ai-detector-badge">
+                    <span class="ai-icon">🤖</span>
+                    <span>Our AI analyzed over 8.4 million relationship patterns</span>
+                    <span class="ai-dot"></span>
+                </div>
+                <div class="live-counter">
+                    <span class="live-dot"></span>
+                    <span id="liveCounterText">❤️ 14,293 people calculating love right now</span>
+                </div>
+                <h1 class="title">Real Love Calculator</h1>
+                <span class="love-emoji">👩‍❤️‍👨</span>
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="userName" placeholder="Enter your name" autocomplete="off" inputmode="text">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Your Love/Crush</label>
+                    <input type="text" class="form-input" id="loveName" placeholder="Enter crush name" autocomplete="off" inputmode="text">
+                </div>
+                <button class="calculate-btn" id="calcBtn" onclick="handleCalculate()">❤️ Calculate Love ❤️</button>
+                <div class="footer">© 2026 — Built with passion ✨ <span class="footer-heart">❤️</span></div>
+            </div>
+        </div>
+
+        <div id="page2" class="page">
+            <div class="glass-card">
+                <div class="prank-pre-message" id="prankPreMessage">
+                    <span class="pre-skull">💀</span>
+                    <div class="pre-title">This relationship is sponsored by heartbreak 💀</div>
+                    <div class="pre-subtitle">Even your ancestors disagree. Gad has summoned FBI to monitor this relationship 😭</div>
+                </div>
+                <h1 class="prank-title">You have been fooled by Gad</h1>
+                <p class="prank-subtitle">Your name as well as name of your love<br>has been sent to Gad</p>
+                <span class="laugh-emoji">😂</span>
+                <div class="prank-social-section">
+                    <div class="prank-social-title">Follow Him</div>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/gadmichael7?igsh=cmd5cms1aWY1a25v&utm_source=qr" target="_blank" rel="noopener noreferrer" class="social-link instagram-link">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            @gadmichael7
+                        </a>
+                        <a href="https://www.tiktok.com/@gadmichael7" target="_blank" rel="noopener noreferrer" class="social-link tiktok-link">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.88-2.89 2.89 2.89 0 012.88-2.89c.2 0 .39.02.57.06V9.66a6.33 6.33 0 00-.57-.03A6.34 6.34 0 003 15.97a6.34 6.34 0 006.33 6.33 6.34 6.34 0 006.33-6.33V8.73a8.16 8.16 0 004.77 1.53V6.82a4.85 4.85 0 01-1-.13z"/></svg>
+                            @gadmichael7
+                        </a>
+                    </div>
+                </div>
+                <button class="back-btn" id="backBtn1" onclick="goBack()">← Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Syncing with server...</div>
+    </div>
+
+    <div id="scanningOverlay" class="scanning-overlay">
+        <div class="scanning-card">
+            <span class="scanning-emoji">🔍</span>
+            <div class="scanning-text" id="scanningText">Analyzing names...</div>
+            <div class="scanning-progress-container">
+                <div class="scanning-progress-bar" id="scanningProgressBar"></div>
+            </div>
+            <div class="scanning-percentage" id="scanningPercentage">0%</div>
+            <div class="scanning-hearts" id="scanningHearts">💕 💕 💕</div>
+            <div class="scanning-details">Powered by AI • 8.4M patterns analyzed</div>
+        </div>
+    </div>
+
+    <div id="easterEggOverlay" class="easter-egg-overlay">
+        <div class="easter-egg-card">
+            <span class="easter-egg-emoji" id="easterEggEmoji">🚨</span>
+            <div class="easter-egg-title" id="easterEggTitle">Wait a minute...</div>
+            <div class="easter-egg-text" id="easterEggText">Something seems off here...</div>
+            <button class="easter-egg-btn" id="easterEggBtn">Continue Anyway 😭</button>
+        </div>
+    </div>
+
+    <audio id="heartbeatSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="evilLaughSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const API_BASE = 'https://love-calculator-1of4.onrender.com/api';
+
+        function initLiveCounter() {
+            let baseCount = 12000 + Math.floor(Math.random() * 6000);
+
+            function updateCounter() {
+                const change = Math.floor(Math.random() * 17) - 8;
+                baseCount += change;
+                if (baseCount < 10000) baseCount = 10000 + Math.floor(Math.random() * 2000);
+                if (baseCount > 25000) baseCount = 22000 + Math.floor(Math.random() * 2000);
+                document.getElementById('liveCounterText').textContent = `❤️ ${baseCount.toLocaleString()} people calculating love right now`;
+
+                // Random interval between 3-4 seconds (3000-4000ms)
+                const nextInterval = 3000 + Math.floor(Math.random() * 1000);
+                setTimeout(updateCounter, nextInterval);
+            }
+
+            // Start with random interval
+            const firstInterval = 3000 + Math.floor(Math.random() * 1000);
+            setTimeout(updateCounter, firstInterval);
+        }
+
+        const EASTER_EGGS = {
+            mom: {
+                triggers: ['mom', 'mum', 'mother', 'mama', 'mummy'],
+                emoji: '🚔',
+                title: 'FBI OPEN UP! 🚨',
+                text: "This relationship is illegal 💀
+Gad is calling the authorities right now. Your mom?! Really?!"
+            },
+            teacher: {
+                triggers: ['teacher', 'professor', 'lecturer', 'sir', 'madam'],
+                emoji: '👨‍🏫',
+                title: 'Detention Forever! 📚',
+                text: "Your teacher?! The principal has been notified.
+Gad is disappointed in your academic choices 💀"
+            },
+            dog: {
+                triggers: ['dog', 'puppy', 'cat', 'pet', 'animal', 'goat', 'cow'],
+                emoji: '🐕',
+                title: 'Animal Control Alert! 🐾',
+                text: "We don't judge... but PETA might.
+Gad has contacted animal welfare services 😭"
+            },
+            numbers: {
+                triggers: [],
+                check: (name) => /\d/.test(name),
+                emoji: '🔢',
+                title: 'Math Error! ➗',
+                text: "You entered NUMBERS?! This isn't a math test.
+Gad's calculator just exploded 💀"
+            },
+            insults: {
+                triggers: ['stupid', 'idiot', 'fool', 'dumb', 'ugly', 'trash', 'garbage', 'worthless', 'loser', 'hate'],
+                emoji: '🤬',
+                title: 'Toxic Relationship Detected! ☠️',
+                text: "That's not very loving...
+Gad has flagged this as a hostile environment 😭"
+            },
+            self: {
+                triggers: [],
+                check: (name, love) => name.trim().toLowerCase() === love.trim().toLowerCase(),
+                emoji: '🪞',
+                title: 'Self-Love Check! 💅',
+                text: "You entered your own name?!
+Gad respects the confidence, but this is a LOVE calculator, not a mirror app 💀"
+            }
+        };
+
+        function checkEasterEggs(name, love) {
+            const lowerName = name.toLowerCase();
+            const lowerLove = love.toLowerCase();
+            const combined = lowerName + ' ' + lowerLove;
+            for (const [key, egg] of Object.entries(EASTER_EGGS)) {
+                let triggered = false;
+                if (egg.check) {
+                    if (egg.check(name, love) || egg.check(love, name)) triggered = true;
+                } else {
+                    for (const trigger of egg.triggers) {
+                        if (combined.includes(trigger)) { triggered = true; break; }
+                    }
+                }
+                if (triggered) return egg;
+            }
+            return null;
+        }
+
+        function showEasterEgg(egg) {
+            return new Promise((resolve) => {
+                document.getElementById('easterEggEmoji').textContent = egg.emoji;
+                document.getElementById('easterEggTitle').textContent = egg.title;
+                document.getElementById('easterEggText').textContent = egg.text;
+                document.getElementById('easterEggOverlay').classList.add('active');
+                document.getElementById('easterEggBtn').onclick = () => {
+                    document.getElementById('easterEggOverlay').classList.remove('active');
+                    resolve();
+                };
+            });
+        }
+
+        const SCAN_MESSAGES = [
+            'Analyzing names...',
+            'Checking chemistry...',
+            'Detecting hidden feelings...',
+            'Calculating compatibility...',
+            'Scanning heart patterns...',
+            'Measuring love frequency...',
+            'Consulting the love oracle...',
+            'Cross-referencing soulmate database...'
+        ];
+
+        function showScanning() {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('scanningOverlay');
+                const textEl = document.getElementById('scanningText');
+                const barEl = document.getElementById('scanningProgressBar');
+                const pctEl = document.getElementById('scanningPercentage');
+                const heartsEl = document.getElementById('scanningHearts');
+                overlay.classList.add('active');
+                let progress = 0;
+                const totalDuration = 4000 + Math.random() * 2000;
+                const startTime = Date.now();
+                const interval = setInterval(() => {
+                    const elapsed = Date.now() - startTime;
+                    progress = Math.min((elapsed / totalDuration) * 100, 99);
+                    barEl.style.width = progress + '%';
+                    pctEl.textContent = Math.floor(progress) + '%';
+                    const msgIndex = Math.floor((progress / 100) * SCAN_MESSAGES.length);
+                    textEl.textContent = SCAN_MESSAGES[Math.min(msgIndex, SCAN_MESSAGES.length - 1)];
+                    const heartCount = Math.max(1, Math.floor(progress / 20));
+                    heartsEl.textContent = '💕 '.repeat(heartCount).trim();
+                    if (progress >= 99) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            overlay.classList.remove('active');
+                            barEl.style.width = '0%';
+                            resolve();
+                        }, 500);
+                    }
+                }, 100);
+            });
+        }
+
+        function playSounds() {
+            const heartbeat = document.getElementById('heartbeatSound');
+            const laugh = document.getElementById('evilLaughSound');
+            heartbeat.volume = 0.4;
+            laugh.volume = 0.5;
+            heartbeat.play().catch(() => {});
+            setTimeout(() => { laugh.play().catch(() => {}); }, 2000);
+        }
+
+        async function saveSubmission(name, love) {
+            try {
+                const response = await fetch(`${API_BASE}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, love })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    console.error('API error:', data.error);
+                    // Still return true so page switches even if save fails
+                    return true;
+                }
+                return true;
+            } catch (e) {
+                console.error('Failed to save:', e);
+                // Still return true so the prank works offline
+                return true;
+            }
+        }
+
+        function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+            const target = document.getElementById(pageId);
+            if (target) { target.style.display = 'flex'; setTimeout(() => { target.classList.add('active'); }, 10); }
+            window.scrollTo(0, 0);
+        }
+
+        function goBack() {
+            document.getElementById('userName').value = '';
+            document.getElementById('loveName').value = '';
+            switchPage('page1');
+        }
+
+        async function handleCalculate() {
+            console.log('Calculate button clicked!');
+            const userName = document.getElementById('userName').value;
+            const loveName = document.getElementById('loveName').value;
+            console.log('Names:', userName, loveName);
+            if (!userName.trim() || !loveName.trim()) {
+                alert('Please enter both names! 💕');
+                return;
+            }
+            const egg = checkEasterEggs(userName, loveName);
+            if (egg) await showEasterEgg(egg);
+            await showScanning();
+            showLoading();
+            const success = await saveSubmission(userName, loveName);
+            console.log('Save success:', success);
+            hideLoading();
+            if (success) {
+                playSounds();
+                console.log('Switching to page2');
+                switchPage('page2');
+            }
+        }
+
+        // Start live counter immediately
+        initLiveCounter();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, attaching listeners');
+            const calcBtn = document.getElementById('calcBtn');
+            const backBtn = document.getElementById('backBtn1');
+            const loveInput = document.getElementById('loveName');
+
+            if (calcBtn) {
+                calcBtn.addEventListener('click', handleCalculate);
+                console.log('Calc button listener attached');
+            } else {
+                console.error('Calc button not found!');
+            }
+
+            if (backBtn) {
+                backBtn.addEventListener('click', goBack);
+            }
+
+            if (loveInput) {
+                loveInput.addEventListener('keypress', function(e) { 
+                    if (e.key === 'Enter') handleCalculate(); 
+                });
+            }
+        });
+    </script>
+</body>
+</html>
