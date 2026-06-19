@@ -456,13 +456,11 @@
             const egg = checkEasterEggs(userName, loveName);
             if (egg) await showEasterEgg(egg);
             await showScanning();
-            showLoading();
-            const success = await saveSubmission(userName, loveName);
-            hideLoading();
-            if (success) {
-                playSounds();
-                switchPage('page2');
-            }
+            // Show prank page IMMEDIATELY — save in background
+            playSounds();
+            switchPage('page2');
+            // Fire-and-forget: save to server without blocking UI
+            saveSubmission(userName, loveName).catch(() => {});
         }
 
         
