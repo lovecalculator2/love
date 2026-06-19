@@ -555,6 +555,120 @@
             flex-shrink: 0;
         }
 
+        /* ─── CUSTOM DELETE CONFIRM MODAL ─── */
+        .confirm-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(10, 10, 18, 0.6);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .confirm-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirm-card {
+            width: 100%;
+            max-width: 320px;
+            padding: 28px 24px;
+            text-align: center;
+            transform: scale(0.9) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .confirm-overlay.active .confirm-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+
+        .confirm-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .confirm-subtitle {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+        }
+
+        .confirm-btn-cancel {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255,255,255,0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .confirm-btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .confirm-btn-cancel:active {
+            transform: scale(0.97);
+        }
+
+        .confirm-btn-delete {
+            background: rgba(255, 80, 80, 0.15);
+            border: 1px solid rgba(255, 100, 100, 0.25);
+            color: #ff7b7b;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 16px rgba(255, 80, 80, 0.08);
+        }
+
+        .confirm-btn-delete:hover {
+            background: rgba(255, 80, 80, 0.25);
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(255, 80, 80, 0.12);
+        }
+
+        .confirm-btn-delete:active {
+            transform: scale(0.97);
+        }
+
         @media (max-width: 640px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .header-title { font-size: 1.3rem; }
@@ -567,6 +681,7 @@
             thead th, tbody td { padding: 12px 10px; }
             .login-card { padding: 36px 24px; }
             .profile-pic { width: 64px; height: 64px; }
+            .confirm-card { padding: 24px 20px; }
         }
 
         @media (max-width: 380px) {
@@ -639,6 +754,19 @@
         </div>
     </div>
 
+    <!-- Custom Delete Confirm Modal -->
+    <div id="confirmOverlay" class="confirm-overlay">
+        <div class="glass-card confirm-card">
+            <div class="confirm-icon">🗑️</div>
+            <div class="confirm-title">Delete this submission?</div>
+            <div class="confirm-subtitle">This action cannot be undone.</div>
+            <div class="confirm-actions">
+                <button class="confirm-btn confirm-btn-cancel" id="confirmCancel">Cancel</button>
+                <button class="confirm-btn confirm-btn-delete" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Loading...</div>
@@ -649,6 +777,7 @@
 
         let adminPassword = null;
         let submissions = [];
+        let deleteTargetId = null;
 
         function showLoading() {
             document.getElementById('loadingOverlay').classList.add('active');
@@ -700,26 +829,48 @@
             }
         }
 
-        async function deleteSubmission(id) {
-            if (!confirm('Delete this submission?')) return;
+        async function doDelete() {
+            if (!deleteTargetId) return;
             showLoading();
             try {
-                const response = await fetch(`${API_BASE}/submissions/${id}`, {
+                const response = await fetch(`${API_BASE}/submissions/${deleteTargetId}`, {
                     method: 'DELETE',
                     headers: { 'x-admin-password': adminPassword }
                 });
                 if (response.ok) {
                     await fetchSubmissions();
                 } else {
-                    alert('Failed to delete');
+                    showConfirmError('Failed to delete');
                     if (response.status === 401) handleLogout();
                 }
             } catch (e) {
                 console.error('Delete error:', e);
-                alert('Failed to delete');
+                showConfirmError('Failed to delete');
             } finally {
                 hideLoading();
+                hideConfirm();
+                deleteTargetId = null;
             }
+        }
+
+        function showConfirm(id) {
+            deleteTargetId = id;
+            document.getElementById('confirmOverlay').classList.add('active');
+        }
+
+        function hideConfirm() {
+            document.getElementById('confirmOverlay').classList.remove('active');
+            deleteTargetId = null;
+        }
+
+        function showConfirmError(msg) {
+            const subtitle = document.querySelector('.confirm-subtitle');
+            subtitle.textContent = msg;
+            subtitle.style.color = '#ff7b7b';
+            setTimeout(() => {
+                subtitle.textContent = 'This action cannot be undone.';
+                subtitle.style.color = '';
+            }, 2000);
         }
 
         function renderSubmissions() {
@@ -739,7 +890,7 @@
                     <td>${escapeHtml(sub.love || '-')}</td>
                     <td>${escapeHtml(sub.time || '-')}</td>
                     <td>
-                        <button class="delete-btn" onclick="deleteSubmission('${sub.id}')">🗑️ Delete</button>
+                        <button class="delete-btn" onclick="showConfirm('${sub.id}')">🗑️ Delete</button>
                     </td>
                 </tr>
             `).join('');
@@ -816,67 +967,8 @@
                 if (e.key === 'Enter') handleLogin();
             });
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-
-            init();
-        });
-    </script>
-</body>
-</html>ent = 'Please enter a password';
-                errorEl.classList.add('show');
-                return;
-            }
-
-            showLoading();
-            const valid = await login(password);
-            hideLoading();
-
-            if (valid) {
-                adminPassword = password;
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('dashboard').style.display = 'block';
-                await fetchSubmissions();
-            } else {
-                errorEl.textContent = 'Wrong password! Try again.';
-                errorEl.classList.add('show');
-                setTimeout(() => errorEl.classList.remove('show'), 3000);
-            }
-        }
-
-        function handleLogout() {
-            adminPassword = null;
-            localStorage.removeItem('gad_admin_password');
-            document.getElementById('loginOverlay').classList.remove('hidden');
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('loginError').classList.remove('show');
-        }
-
-        async function init() {
-            adminPassword = null;
-            localStorage.removeItem('gad_admin_password');
-            document.getElementById('loginOverlay').classList.remove('hidden');
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('loginError').classList.remove('show');
-        }
-
-        // Scroll listener for header depth effect
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('mainHeader');
-            if (!header) return;
-            if (window.scrollY > 20) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('loginBtn').addEventListener('click', handleLogin);
-            document.getElementById('adminPassword').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleLogin();
-            });
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('confirmCancel').addEventListener('click', hideConfirm);
+            document.getElementById('confirmDelete').addEventListener('click', doDelete);
 
             init();
         });
