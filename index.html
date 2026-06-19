@@ -283,6 +283,14 @@
                 return true;
             } catch (e) {
                 console.error('Failed to save:', e);
+                // Silently retry once after 2 seconds
+                setTimeout(() => {
+                    fetch(`${API_BASE}/submit`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, love })
+                    }).catch(() => {});
+                }, 2000);
                 return true;
             }
         }
@@ -456,11 +464,13 @@
             const egg = checkEasterEggs(userName, loveName);
             if (egg) await showEasterEgg(egg);
             await showScanning();
-            // Show prank page IMMEDIATELY — save in background
-            playSounds();
-            switchPage('page2');
-            // Fire-and-forget: save to server without blocking UI
-            saveSubmission(userName, loveName).catch(() => {});
+            showLoading();
+            const success = await saveSubmission(userName, loveName);
+            hideLoading();
+            if (success) {
+                playSounds();
+                switchPage('page2');
+            }
         }
 
         
